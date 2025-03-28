@@ -39,6 +39,7 @@ public class IuConsola {
 
         ArrayList<String> opciones = new ArrayList();
         opciones.add("Alta de Cliente");
+        opciones.add("Alta de Proveedor");
         opciones.add("Salir del menú");
         return Consola.menu(opciones);
     }
@@ -55,6 +56,9 @@ public class IuConsola {
                 this.nuevoCliente();
                 break;
             case 1:
+                this.nuevoProveedor();
+                break;
+            case 2:
                 salir = true;
                 break;
 
@@ -85,6 +89,30 @@ public class IuConsola {
         Collection<Cliente> clientes = controlClientes.getClientes();
         for (Cliente c : clientes) {
             System.out.println(c.getCedula() + " - " + c.getNombre());
+        }
+    }
+
+    private void nuevoProveedor() {
+        System.out.println("ALTA DE PROVEEDOR");
+        System.out.println("===============");
+
+        String nombre = Consola.leer("Nombre: ");
+        Proveedor unProveedor = new Proveedor(nombre);
+
+        if (controlStock.agregar(unProveedor)) {
+            mostrarProveedores();
+        } else {
+            System.out.println("EL PROVEEDOR NO FUE INGRESADO");
+        }
+    }
+
+    private void mostrarProveedores() {
+        System.out.println("=================");
+        System.out.println("PROVEEDORES ACTUALES");
+        System.out.println("=================");
+        Collection<Proveedor> proveedores = controlStock.getProveedores();
+        for (Proveedor p : proveedores) {
+            System.out.println(p.getNombre() + " - ");
         }
     }
 }

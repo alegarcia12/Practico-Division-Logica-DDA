@@ -42,8 +42,12 @@ public class ControlStock {
 
     }
 
-    public void agregar(Proveedor unProveedor) {
-        proveedores.add(unProveedor);
+    public Boolean agregar(Proveedor unProveedor) {
+        Boolean agregadoOk = false;
+        if (unProveedor.validar() && noExisteProveedor(unProveedor)) {
+            agregadoOk = proveedores.add(unProveedor);
+        }
+        return agregadoOk;
     }
 
     public boolean agregar(Producto unProducto) {
@@ -63,6 +67,11 @@ public class ControlStock {
             }
         }
         return producto;
+    }
+
+    public boolean noExisteProveedor(Proveedor unProveedor) {
+        Boolean existe = proveedores.contains(unProveedor);
+        return existe;
     }
 
 }
