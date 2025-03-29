@@ -40,6 +40,7 @@ public class IuConsola {
         ArrayList<String> opciones = new ArrayList();
         opciones.add("Alta de Cliente");
         opciones.add("Alta de Proveedor");
+        opciones.add("Alta de Producto");
         opciones.add("Salir del menú");
         return Consola.menu(opciones);
     }
@@ -59,6 +60,9 @@ public class IuConsola {
                 this.nuevoProveedor();
                 break;
             case 2:
+                this.nuevoProdcuto();
+                break;
+            case 3:
                 salir = true;
                 break;
 
@@ -113,6 +117,38 @@ public class IuConsola {
         Collection<Proveedor> proveedores = controlStock.getProveedores();
         for (Proveedor p : proveedores) {
             System.out.println(p.getNombre() + " - ");
+        }
+    }
+
+    private void nuevoProdcuto() {
+        System.out.println("ALTA DE PRODUCTO");
+        System.out.println("===============");
+
+        String nombre;
+        do {
+            nombre = Consola.leer("Nombre: ");
+        } while (nombre.isBlank());
+
+        int unidades = Consola.leerInt("Cantidad de Unidades: ");
+        int precio = Consola.leerInt("Precio: ");
+        int posicion = Consola.menu(controlStock.getProveedores());
+        Proveedor unProveedor = controlStock.getProveedor(posicion);
+        Producto unProducto = new Producto(nombre, precio, unidades, unProveedor);
+
+        if (controlStock.agregar(unProducto)) {
+            mostrarProductos();
+        } else {
+            System.out.println("EL PRODUCTO NO FUE INGRESADO");
+        }
+    }
+
+    private void mostrarProductos() {
+        System.out.println("=================");
+        System.out.println("PRODUCTOS ACTUALES");
+        System.out.println("=================");
+        Collection<Producto> productos = controlStock.getProductos();
+        for (Producto p : productos) {
+            System.out.println(p.getNombre() + " - " + p.getPrecio() + " - " + p.getUnidades());
         }
     }
 }
