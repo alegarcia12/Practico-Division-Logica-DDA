@@ -141,7 +141,7 @@ public class IuConsola {
             System.out.println("EL PRODUCTO NO FUE INGRESADO");
         }
     }
-
+    //Mostrar Productos
     private void mostrarProductos() {
         System.out.println("=================");
         System.out.println("PRODUCTOS ACTUALES");
