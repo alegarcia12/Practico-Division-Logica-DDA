@@ -3,19 +3,15 @@ package interfaz;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import logica.ControlClientes;
 import logica.Cliente;
-import logica.ControlFacturas;
-import logica.ControlStock;
+import logica.Fachada;
+
 import logica.Factura;
 import logica.Producto;
 import logica.Proveedor;
 import utilidades.Consola;
 
 public class IuConsola {
-
-    ControlClientes controlClientes = ControlClientes.getInstancia();
-    ControlStock controlStock = ControlStock.getInstancia();
 
     /**
      * Ejecuta la consola
@@ -78,7 +74,7 @@ public class IuConsola {
         Cliente unCliente = new Cliente();
         unCliente.setCedula(Consola.leer("Cedula:"));
         unCliente.setNombre(Consola.leer("Nombre:"));
-        if (controlClientes.agregar(unCliente)) {
+        if (Fachada.getInstancia().agregar(unCliente)) {
             mostrarClientes();
         } else {
             System.out.println("EL CLIENTE NO FUE INGRESADO");
@@ -90,7 +86,7 @@ public class IuConsola {
         System.out.println("=================");
         System.out.println("CLIENTES ACTUALES");
         System.out.println("=================");
-        Collection<Cliente> clientes = controlClientes.getClientes();
+        Collection<Cliente> clientes = Fachada.getInstancia().getClientes();
         for (Cliente c : clientes) {
             System.out.println(c.getCedula() + " - " + c.getNombre());
         }
@@ -103,7 +99,7 @@ public class IuConsola {
         String nombre = Consola.leer("Nombre: ");
         Proveedor unProveedor = new Proveedor(nombre);
 
-        if (controlStock.agregar(unProveedor)) {
+        if (Fachada.getInstancia().agregar(unProveedor)) {
             mostrarProveedores();
         } else {
             System.out.println("EL PROVEEDOR NO FUE INGRESADO");
@@ -114,7 +110,7 @@ public class IuConsola {
         System.out.println("=================");
         System.out.println("PROVEEDORES ACTUALES");
         System.out.println("=================");
-        Collection<Proveedor> proveedores = controlStock.getProveedores();
+        Collection<Proveedor> proveedores = Fachada.getInstancia().getProveedores();
         for (Proveedor p : proveedores) {
             System.out.println(p.getNombre() + " - ");
         }
@@ -131,22 +127,23 @@ public class IuConsola {
 
         int unidades = Consola.leerInt("Cantidad de Unidades: ");
         int precio = Consola.leerInt("Precio: ");
-        int posicion = Consola.menu(controlStock.getProveedores());
-        Proveedor unProveedor = controlStock.getProveedor(posicion);
+        int posicion = Consola.menu(Fachada.getInstancia().getProveedores());
+        Proveedor unProveedor = Fachada.getInstancia().getProveedor(posicion);
         Producto unProducto = new Producto(nombre, precio, unidades, unProveedor);
 
-        if (controlStock.agregar(unProducto)) {
+        if (Fachada.getInstancia().agregar(unProducto)) {
             mostrarProductos();
         } else {
             System.out.println("EL PRODUCTO NO FUE INGRESADO");
         }
     }
+
     //Mostrar Productos
     private void mostrarProductos() {
         System.out.println("=================");
         System.out.println("PRODUCTOS ACTUALES");
         System.out.println("=================");
-        Collection<Producto> productos = controlStock.getProductos();
+        Collection<Producto> productos = Fachada.getInstancia().getProductos();
         for (Producto p : productos) {
             System.out.println(p.getNombre() + " - " + p.getPrecio() + " - " + p.getUnidades());
         }
