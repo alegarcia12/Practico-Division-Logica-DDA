@@ -7,6 +7,7 @@ import logica.Cliente;
 import logica.Fachada;
 
 import logica.Factura;
+import logica.LineaFactura;
 import logica.Producto;
 import logica.Proveedor;
 import utilidades.Consola;
@@ -19,10 +20,10 @@ public class IuConsola {
     public void mostrarConsola() {
         boolean salir;
         do {
-
+            
             int opcion = imprimirMenu();
             salir = procesarOpcion(opcion);
-
+            
         } while (!salir);
     }
 
@@ -32,11 +33,12 @@ public class IuConsola {
     private int imprimirMenu() {
         System.out.println("MENU");
         System.out.println("====");
-
+        
         ArrayList<String> opciones = new ArrayList();
         opciones.add("Alta de Cliente");
         opciones.add("Alta de Proveedor");
         opciones.add("Alta de Producto");
+        opciones.add("Alta de Factura");
         opciones.add("Salir del menú");
         return Consola.menu(opciones);
     }
@@ -47,7 +49,7 @@ public class IuConsola {
      */
     private boolean procesarOpcion(int opcion) {
         boolean salir = false;
-
+        
         switch (opcion) {
             case 0:
                 this.nuevoCliente();
@@ -59,18 +61,21 @@ public class IuConsola {
                 this.nuevoProdcuto();
                 break;
             case 3:
+                this.nuevaFactura();
+                break;
+            case 4:
                 salir = true;
                 break;
-
+            
         }
         return salir;
     }
-
+    
     private void nuevoCliente() {
-
+        
         System.out.println("ALTA DE CLIENTE");
         System.out.println("===============");
-
+        
         Cliente unCliente = new Cliente();
         unCliente.setCedula(Consola.leer("Cedula:"));
         unCliente.setNombre(Consola.leer("Nombre:"));
@@ -79,9 +84,9 @@ public class IuConsola {
         } else {
             System.out.println("EL CLIENTE NO FUE INGRESADO");
         }
-
+        
     }
-
+    
     private void mostrarClientes() {
         System.out.println("=================");
         System.out.println("CLIENTES ACTUALES");
@@ -91,21 +96,21 @@ public class IuConsola {
             System.out.println(c.getCedula() + " - " + c.getNombre());
         }
     }
-
+    
     private void nuevoProveedor() {
         System.out.println("ALTA DE PROVEEDOR");
         System.out.println("===============");
-
+        
         String nombre = Consola.leer("Nombre: ");
         Proveedor unProveedor = new Proveedor(nombre);
-
+        
         if (Fachada.getInstancia().agregar(unProveedor)) {
             mostrarProveedores();
         } else {
             System.out.println("EL PROVEEDOR NO FUE INGRESADO");
         }
     }
-
+    
     private void mostrarProveedores() {
         System.out.println("=================");
         System.out.println("PROVEEDORES ACTUALES");
@@ -115,27 +120,31 @@ public class IuConsola {
             System.out.println(p.getNombre() + " - ");
         }
     }
-
+    
     private void nuevoProdcuto() {
         System.out.println("ALTA DE PRODUCTO");
         System.out.println("===============");
-
-        String nombre;
-        do {
-            nombre = Consola.leer("Nombre: ");
-        } while (nombre.isBlank());
-
-        int unidades = Consola.leerInt("Cantidad de Unidades: ");
-        int precio = Consola.leerInt("Precio: ");
-        int posicion = Consola.menu(Fachada.getInstancia().getProveedores());
-        Proveedor unProveedor = Fachada.getInstancia().getProveedor(posicion);
-        Producto unProducto = new Producto(nombre, precio, unidades, unProveedor);
-
-        if (Fachada.getInstancia().agregar(unProducto)) {
-            mostrarProductos();
-        } else {
+        Producto producto = new Producto();
+        
+        while (!producto.setNombre(Consola.leer("Nombre: "))) {
+        }
+        
+        boolean productoOk = false;
+        if (producto.setUnidades(Consola.leerInt("Cantidad de Unidades: "))) {
+            int idProv = Consola.menu(Fachada.getInstancia().getProveedores());
+            producto.setProveedor(Fachada.getInstancia().getProveedor(idProv));
+            
+            int precio = Consola.leerInt("Precio: ");
+            if (producto.setPrecio(precio)) {
+                productoOk = Fachada.getInstancia().agregar(producto);
+                mostrarProductos();
+            }
+        }
+        
+        if (!productoOk) {
             System.out.println("EL PRODUCTO NO FUE INGRESADO");
         }
+        
     }
 
     //Mostrar Productos
@@ -147,5 +156,53 @@ public class IuConsola {
         for (Producto p : productos) {
             System.out.println(p.getNombre() + " - " + p.getPrecio() + " - " + p.getUnidades());
         }
+    }
+    
+    private void nuevaFactura() {
+        String cedula = Consola.leer("Cedula: ");
+        Cliente cliente = Fachada.getInstancia().getCliente(cedula);
+        
+        if (cliente != null) {
+            Boolean agregarProductos = true;
+            Factura fc = new Factura(cliente);
+            while (agregarProductos) {
+                int codigo = Consola.leerInt("Codigo: ");
+                int cantidad = Consola.leerInt("Cantidad: ");
+                Producto producto = Fachada.getInstancia().getProducto(codigo);
+                if (!fc.agregar(cantidad, producto)) {
+                    Consola.println("No se pudo agregar el producto y la cantidad indicada.");
+                }
+                agregarProductos = quiereAgregarMasItems();
+            }
+            mostrarDetalleFc(fc);
+            mostrarTotalFc(fc);
+            if (quiereAgregarFc()) {
+                Fachada.getInstancia().agregar(fc);
+                
+            }
+        }
+        
+    }
+    
+    private Boolean quiereAgregarMasItems() {
+        String respuesta = Consola.leer("Desea agregar mas productos? (s/n)");
+        return "s".equals(respuesta);
+    }
+    
+    private void mostrarDetalleFc(Factura fc) {
+        for (LineaFactura lf : fc.getLineas()) {
+            Producto p = lf.getProducto();
+            String linea = p.getCodigo() + " " + p.getNombre() + " " + lf.getCantidad() + " " + lf.getTotal();
+            Consola.println(linea);
+        }
+    }
+    
+    private void mostrarTotalFc(Factura fc) {
+        Consola.println("Total Factura: " + fc.getTotal());
+    }
+    
+    private boolean quiereAgregarFc() {
+        String respuesta = Consola.leer("Quiere agrear la factura?");
+        return "s".equals(respuesta);
     }
 }

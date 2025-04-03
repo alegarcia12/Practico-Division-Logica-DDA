@@ -52,7 +52,17 @@ public class Fachada {
         return controlStock.getProveedor(posicion);
     }
 
-        
+    public Cliente getCliente(String cedula){
+        return controlClientes.getCliente(cedula);
+    }
+
+    public Producto getProducto(int codigo) {
+        return controlStock.getProducto(codigo);
+    }
+
+    public void agregar(Factura fc) {
+        controlFacturas.agregar(fc);
+    }
         
 
 }

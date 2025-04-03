@@ -42,18 +42,23 @@ public class Factura {
         return fecha;
     }
 
-    public void agregar(int cantidad, Producto p) {
+    public Boolean agregar(int cantidad, Producto p) {
 
+        Boolean productoOk = p.hayStock(cantidad);
         if (tieneProducto(p)) {
             for (LineaFactura l : lineas) {
                 if (l.tieneProducto(p)) {
-                    l.setCantidad(cantidad + l.getCantidad());
+                    productoOk = p.hayStock(cantidad + l.getCantidad());
+                    if (productoOk) {
+                        l.setCantidad(cantidad + l.getCantidad());
+                    }
                     break;
                 }
             }
         } else {
-            lineas.add(new LineaFactura(p, cantidad));
+            productoOk = lineas.add(new LineaFactura(p, cantidad));
         }
+        return productoOk;
     }
 
     public boolean tieneProducto(Producto unP) {
@@ -69,20 +74,20 @@ public class Factura {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append("Factura{cliente=");
         sb.append(cliente);
-        
+
         for (LineaFactura lineaFc : lineas) {
             sb.append(System.getProperty("line.separator"));
             sb.append(lineaFc.toString());
         }
-        
+
         sb.append(System.getProperty("line.separator"));
         sb.append("Total=");
         sb.append(getTotal());
         sb.append("}");
-        
+
         return sb.toString();
     }
 

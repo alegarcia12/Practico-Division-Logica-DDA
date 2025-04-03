@@ -51,13 +51,12 @@ class ControlStock {
     }
 
     public boolean agregar(Producto unProducto) {
-        boolean agregadoOk = false;
-        if (unProducto.validar()) {
-            unProducto.setCodigo(proxIdProd);
+        unProducto.setCodigo(proxIdProd);
+        Boolean agregadoOk = unProducto.validar();
+        if (agregadoOk) {
             proxIdProd++;
             productos.add(unProducto);
             unProducto.getProveedor().agregar(unProducto);
-            agregadoOk = true;
         }
         return agregadoOk;
     }

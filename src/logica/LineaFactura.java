@@ -44,8 +44,9 @@ public class LineaFactura {
         return "LineaFactura{" + "producto=" + producto + ", cantidad=" + cantidad + '}';
     }
 
-    float getTotal() {
+    public float getTotal() {
         return cantidad * producto.getPrecio();
     }
+
 
 }

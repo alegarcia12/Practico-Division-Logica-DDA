@@ -34,8 +34,15 @@ public class Producto {
     }
 
     public boolean setUnidades(int unidades) {
+        int unidadesAnteriores = this.unidades;
         this.unidades = unidades;
-        return true;
+
+        Boolean unidadesOk = validarUnidades();
+        if (!unidadesOk) {
+            this.unidades = unidadesAnteriores;
+        }
+
+        return unidadesOk;
     }
 
     public Proveedor getProveedor() {
@@ -50,8 +57,15 @@ public class Producto {
         return precio;
     }
 
-    public void setPrecio(int precio) {
+    public Boolean setPrecio(int precio) {
+        int precioAnterior = this.precio;
+
         this.precio = precio;
+        Boolean precioOk = validarPrecio();
+        if (!precioOk) {
+            this.precio = precioAnterior;
+        }
+        return precioOk;
     }
 
     public String getNombre() {
@@ -59,8 +73,15 @@ public class Producto {
     }
 
     public boolean setNombre(String nombre) {
+        String nombreAnterior = this.nombre;
         this.nombre = nombre;
-        return true;
+        Boolean nombreOk = validarNombre();
+
+        if (!nombreOk) {
+            this.nombre = nombreAnterior;
+        }
+
+        return nombreOk;
     }
 
     @Override
@@ -76,19 +97,23 @@ public class Producto {
         return codigo;
     }
 
-    public boolean validar() {
-        return validarNombre() && validarStock() && validarPrecio();
+    public Boolean validar() {
+        return validarPrecio() && validarUnidades() && validarNombre();
     }
 
-    private boolean validarNombre() {
+    private Boolean validarNombre() {
         return this.nombre != null && !this.nombre.isBlank();
     }
 
-    private boolean validarStock() {
+    private Boolean validarPrecio() {
+        return this.precio >= 0;
+    }
+
+    private Boolean validarUnidades() {
         return this.unidades > 0;
     }
 
-    private boolean validarPrecio() {
-        return this.precio >= 0;
+    Boolean hayStock(int cantidad) {
+        return getUnidades() >= cantidad;
     }
 }
