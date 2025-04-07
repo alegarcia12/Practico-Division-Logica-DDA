@@ -53,7 +53,7 @@ class ControlClientes {
     }
 
     Cliente getCliente(String cedula) {
-       return clientes.get(cedula);
+        return clientes.get(cedula);
     }
 
 }

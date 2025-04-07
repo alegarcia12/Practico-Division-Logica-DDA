@@ -39,6 +39,7 @@ public class IuConsola {
         opciones.add("Alta de Proveedor");
         opciones.add("Alta de Producto");
         opciones.add("Alta de Factura");
+        opciones.add("Mostrar cliente que compraron producto mas barato");
         opciones.add("Salir del menú");
         return Consola.menu(opciones);
     }
@@ -64,6 +65,9 @@ public class IuConsola {
                 this.nuevaFactura();
                 break;
             case 4:
+                this.consultaUltimaCompraDeClientesProductoMasBarato();
+                break;
+            case 5:
                 salir = true;
                 break;
             
@@ -178,7 +182,6 @@ public class IuConsola {
             mostrarTotalFc(fc);
             if (quiereAgregarFc()) {
                 Fachada.getInstancia().agregar(fc);
-                
             }
         }
         
@@ -204,5 +207,34 @@ public class IuConsola {
     private boolean quiereAgregarFc() {
         String respuesta = Consola.leer("Quiere agrear la factura?");
         return "s".equals(respuesta);
+    }
+    
+    private void consultaUltimaCompraDeClientesProductoMasBarato() {
+        Producto producto = Fachada.getInstancia().getProductoMenorPrecio();
+        
+        if (producto != null) {
+            Collection<Factura> facturas = Fachada.getInstancia().ultimaFcDeCadaClienteQueCompro(producto);
+            mostrarDetalle(producto);
+            mostrarClientesQueCompraron(facturas);
+        } else {
+            Consola.println("No se encontro el producto");
+        }
+        
+    }
+    
+    private void mostrarDetalle(Producto producto) {
+        String linea = "(" + producto.getCodigo() + ") " + producto.getNombre() + " - " + producto.getPrecio() + " " + producto.getUnidades();
+        Consola.println(linea);
+    }
+    
+    private void mostrarClientesQueCompraron(Collection<Factura> facturas) {
+        if (facturas == null || facturas.isEmpty()) {
+            Consola.println("No hay clientes que hayan comprado ese producto");
+        } else {
+            for (Factura fc : facturas) {
+                Cliente c = fc.getCliente();
+                Consola.println(c.getCedula() + " " + c.getNombre() + " " + fc.getFecha());
+            }
+        }
     }
 }

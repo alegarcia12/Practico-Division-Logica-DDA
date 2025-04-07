@@ -5,6 +5,8 @@
  */
 package logica;
 
+import java.util.Objects;
+
 /**
  *
  * @author magda
@@ -116,4 +118,27 @@ public class Producto {
     Boolean hayStock(int cantidad) {
         return getUnidades() >= cantidad;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 29 * hash + Objects.hashCode(this.nombre);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Producto other = (Producto) obj;
+        return Objects.equals(this.nombre, other.nombre);
+    }
+
 }

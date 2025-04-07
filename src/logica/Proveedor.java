@@ -71,7 +71,5 @@ public class Proveedor {
         final Proveedor other = (Proveedor) obj;
         return Objects.equals(this.nombre, other.nombre);
     }
-    
-    
 
 }
